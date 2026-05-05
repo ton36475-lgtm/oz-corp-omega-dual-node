@@ -1,0 +1,15 @@
+{
+  "project": "OZ-CORP-MONOREPO",
+  "version": "0.1.0",
+  "root": ".",
+  "workspace": {
+    "apps": "apps/*",
+    "packages": "packages/*",
+    "services": "services/*"
+  },
+  "audit": {
+    "enabled": true,
+    "failOnSecret": true,
+    "failOnMissingEnvExample": true
+  }
+}

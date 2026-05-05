@@ -1,0 +1,6 @@
+name = "solar-dashboard"
+account_id = "4b35e17c8966dc88f57aa8019ebae2bb"
+compatibility_date = "2023-09-01"
+
+[vars]
+API_SIRINX_CO = "https://api.sirinx.co"

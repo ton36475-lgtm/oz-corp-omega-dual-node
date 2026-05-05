@@ -1,0 +1,73 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "id": "c2f3a4b5-6d7e-8f9a-0b1c-2d3e4f5a6b7c",
+      "executeOn": "webhook",
+      "webhookPath": "/sirinx-data-ingest"
+    },
+    {
+      "parameters": {
+        "functionCode": "return items.map(item => {\n  const data = item.json.body;\n  // Simulate data processing and aggregation\n  return {\n    json: {\n      processedAt: new Date().toISOString(),\n      agentId: data.agentId || \"unknown\",\n      dataType: data.dataType || \"generic\",\n      value: data.value * 1.05 // Example: 5% increase\n    }\n  };\n});"
+      },
+      "name": "Process Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "id": "d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a"
+    },
+    {
+      "parameters": {
+        "authentication": "predefined",
+        "jsonBody": true,
+        "url": "http://mongodb:27017/sirinx_db/aggregated_data",
+        "options": {
+          "method": "POST"
+        }
+      },
+      "name": "Save to MongoDB",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "id": "e6f7a8b9-0c1d-2e3f-4a5b-6c7d8e9f0a1b"
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          "Process Data",
+          0
+        ]
+      ]
+    },
+    "Process Data": {
+      "main": [
+        [
+          "Save to MongoDB",
+          0
+        ]
+      ]
+    }
+  },
+  "name": "SIRINX Data Ingestion and Aggregation",
+  "active": false,
+  "id": "f8g9h0i1-2j3k-4l5m-6n7o-8p9q0r1s2t3u",
+  "settings": {},
+  "staticData": null,
+  "nodesPositions": {
+    "c2f3a4b5-6d7e-8f9a-0b1c-2d3e4f5a6b7c": {
+      "x": 250,
+      "y": 300
+    },
+    "d4e5f6a7-8b9c-0d1e-2f3a-4b5c6d7e8f9a": {
+      "x": 500,
+      "y": 300
+    },
+    "e6f7a8b9-0c1d-2e3f-4a5b-6c7d8e9f0a1b": {
+      "x": 750,
+      "y": 300
+    }
+  }
+}

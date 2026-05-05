@@ -1,0 +1,146 @@
+{
+  "version": "1.0",
+  "updated": "2026-04-03",
+  "images": [
+    {
+      "file": "sirinx-sustainable-infra-en.png",
+      "category": "brochure",
+      "lang": "en",
+      "tags": ["sustainable", "infrastructure", "services", "50% offer"],
+      "use": "FB post, web hero"
+    },
+    {
+      "file": "sirinx-sustainable-infra-th.png",
+      "category": "brochure",
+      "lang": "th",
+      "tags": ["sustainable", "infrastructure", "services", "50% offer", "AI"],
+      "use": "FB post Thai audience"
+    },
+    {
+      "file": "sirinx-rooftop-bess-farm.png",
+      "category": "brochure",
+      "lang": "th",
+      "tags": ["rooftop", "BESS", "floating solar", "farm", "50% offer"],
+      "use": "FB post, industrial clients"
+    },
+    {
+      "file": "sirinx-smarter-systems-th.png",
+      "category": "brochure",
+      "lang": "th",
+      "tags": ["smarter systems", "services", "contact"],
+      "use": "FB post Thai"
+    },
+    {
+      "file": "sirinx-smarter-systems-en.png",
+      "category": "brochure",
+      "lang": "en",
+      "tags": ["smarter systems", "services", "contact"],
+      "use": "FB post English"
+    },
+    {
+      "file": "sirinx-smarter-systems-th2.png",
+      "category": "brochure",
+      "lang": "th",
+      "tags": ["smarter systems", "services", "contact"],
+      "use": "FB post Thai variant"
+    },
+    {
+      "file": "sirinx-services-en-detail.png",
+      "category": "brochure",
+      "lang": "en",
+      "tags": ["solar carport", "BESS interior", "ground farm", "wind turbines"],
+      "use": "FB post, detail services"
+    },
+    {
+      "file": "sirinx-services-flyer-th.jpg",
+      "category": "flyer",
+      "lang": "th",
+      "tags": ["services", "SMART ENERGY", "contact Waraporn"],
+      "use": "Print, FB post"
+    },
+    {
+      "file": "sirinx-factory-5050-invest.png",
+      "category": "investment",
+      "lang": "th",
+      "tags": ["50:50 investment", "150% tax shield", "ROI 4 years", "factory rooftop"],
+      "use": "FB post investment, B2B"
+    },
+    {
+      "file": "sirinx-tax-shield-150.png",
+      "category": "tax",
+      "lang": "th",
+      "tags": ["150% tax", "SME", "e-Tax Invoice", "deadline 2571"],
+      "use": "FB post tax benefit"
+    },
+    {
+      "file": "sirinx-physical-ai-robots.png",
+      "category": "tech",
+      "lang": "th",
+      "tags": ["Physical AI", "Maximo", "Solaris", "robot", "ROI 6 months"],
+      "use": "FB post tech/AI angle"
+    },
+    {
+      "file": "industry6-robot-solar.jpg",
+      "category": "hero",
+      "lang": "en",
+      "tags": ["Industry 6.0", "robot", "solar panels", "silent power"],
+      "use": "FB post hero, web banner"
+    },
+    {
+      "file": "industry6-robot-sirinx.jpg",
+      "category": "hero",
+      "lang": "en",
+      "tags": ["Industry 6.0", "robot", "Sirinx brand", "solar"],
+      "use": "FB post hero branded"
+    },
+    {
+      "file": "ai-robot-solar-city.jpg",
+      "category": "hero",
+      "lang": "neutral",
+      "tags": ["AI robot", "solar panels", "smart city"],
+      "use": "FB post, general solar+AI"
+    },
+    {
+      "file": "solar-rooftop-robot-sunset.jpg",
+      "category": "photo",
+      "lang": "neutral",
+      "tags": ["rooftop solar", "robot cleaner", "sunset", "real photo"],
+      "use": "FB post real installation"
+    },
+    {
+      "file": "solar-building-aerial.jpg",
+      "category": "photo",
+      "lang": "neutral",
+      "tags": ["building", "solar roof", "aerial", "modern"],
+      "use": "FB post architecture"
+    },
+    {
+      "file": "solar-hq-green-field.jpg",
+      "category": "concept",
+      "lang": "neutral",
+      "tags": ["HQ", "green field", "futuristic", "eco building"],
+      "use": "FB post vision/future"
+    },
+    {
+      "file": "solar-ev-station-aerial.jpg",
+      "category": "concept",
+      "lang": "neutral",
+      "tags": ["EV station", "solar charging", "aerial", "sunset"],
+      "use": "FB post EV+solar"
+    },
+    {
+      "file": "solar-ev-station-night.jpg",
+      "category": "concept",
+      "lang": "neutral",
+      "tags": ["EV station", "night", "modern", "highway"],
+      "use": "FB post EV+solar night"
+    },
+    {
+      "file": "bess-battery-storage.jpg",
+      "category": "photo",
+      "lang": "neutral",
+      "tags": ["BESS", "battery", "energy storage", "real photo"],
+      "use": "FB post battery storage"
+    }
+  ]
+}
