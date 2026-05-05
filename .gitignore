@@ -1,43 +1,4 @@
-
-# Ignore node_modules
-node_modules/
-
-# secrets
-.env
-.env.*
-!.env.example
-services/*/.env
-services/*/.env.*
-apps/*/.env
-apps/*/.env.*
-
-# build/cache
-node_modules/
-.next/
-out/
-dist/
-build/
-.DS_Store
-*.log
-
-# private local docs
-docs/private/
-*.html
-
-# secrets
-.env
-.env.*
-!.env.example
-services/*/.env
-services/*/.env.*
-apps/*/.env
-apps/*/.env.*
-
-# local/private
-docs/private/
-*.html
-
-# build/cache
+# Dependencies / build
 node_modules/
 .next/
 out/
@@ -46,8 +7,27 @@ build/
 .venv/
 venv/
 __pycache__/
+*.tsbuildinfo
 .DS_Store
 *.log
 
-# binaries/installers
+# Secrets & credentials — never commit
+.env
+.env.*
+!.env.example
+*.env
+*secret*
+*.key
+*.pem
+*.p12
+services/*/.env
+services/*/.env.*
+apps/*/.env
+apps/*/.env.*
+
+# Private / exported snapshots
+docs/private/
+*.html
+
+# Binaries / installers
 ozwarp-mac-arm64
