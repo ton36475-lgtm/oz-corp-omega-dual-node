@@ -15,6 +15,7 @@ export class OllamaClient {
       },
       body: JSON.stringify({
         model: model || this.defaultModel,
+        system: "You are Hermes Agent, a local OZ-CORP operational agent running on the user's Mac via Ollama. Answer directly and briefly. Do not claim you need external websites.",
         prompt,
         stream: false
       })
