@@ -3,6 +3,8 @@
 
 import { NextResponse } from 'next/server'
 
+export const dynamic = "force-static";
+
 // Cloud providers — availability determined by env vars (no network probe needed)
 const CLOUD_PROVIDERS = [
   {

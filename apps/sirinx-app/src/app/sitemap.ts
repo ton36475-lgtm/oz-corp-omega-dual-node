@@ -1,6 +1,8 @@
 import type { MetadataRoute } from 'next'
 import { provinces } from '@/data/provinces'
 
+export const dynamic = 'force-static'
+
 const BASE_URL = 'https://sirinx.com'
 
 export default function sitemap(): MetadataRoute.Sitemap {

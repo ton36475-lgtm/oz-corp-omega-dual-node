@@ -32,6 +32,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ZhipuClient, type ZhipuResponse } from '@/lib/providers/zhipu'
 
+export const dynamic = "force-static";
+
 const MAX_IMAGES = 10
 
 type AnalysisType =

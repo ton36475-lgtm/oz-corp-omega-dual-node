@@ -3,6 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 
+export const dynamic = "force-static";
+
 const MODEL_URLS: Record<string, string> = {
   openclaw:  'http://127.0.0.1:11434',
   hiclaw:    'http://127.0.0.1:11435',
