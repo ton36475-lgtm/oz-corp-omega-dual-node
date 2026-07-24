@@ -2,9 +2,20 @@
   "name": "ui-components",
   "version": "1.0.0",
   "description": "Shared UI components for OZ-CORP OMEGA monorepo",
-  "main": "index.js",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc --project tsconfig.json",
+    "test": "tsc --noEmit --project tsconfig.json"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "react": "^19.2.5",
+    "typescript": "^5.9.3"
   },
   "keywords": [],
   "author": "",

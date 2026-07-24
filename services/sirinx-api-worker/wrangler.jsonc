@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "sirinx-api-worker",
+  "account_id": "4b35e17c8966dc88f57aa8019ebae2bb",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-06-14",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "secrets": {
+    "required": [
+      "SIRINX_AI_SERVER_TOKEN"
+    ]
+  },
+  "vars": {
+    "SIRINX_API_MODE": "production-worker",
+    "SIRINX_ALLOWED_ORIGIN": "*",
+    "SIRINX_WORKERS_AI_MODEL": "@cf/meta/llama-3.1-8b-instruct"
+  }
+}

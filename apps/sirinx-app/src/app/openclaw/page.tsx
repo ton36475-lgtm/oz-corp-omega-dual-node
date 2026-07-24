@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import { buildDynamicApiUrl } from '@/lib/api-runtime'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface CommandResult {
@@ -190,7 +191,7 @@ export default function OpenClawPage() {
       setLoading(true)
     }
     try {
-      const res = await fetch('/api/openclaw/run', {
+      const res = await fetch(buildDynamicApiUrl('/api/openclaw/run'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ command: cmdId }),
@@ -215,7 +216,7 @@ export default function OpenClawPage() {
     setLoading(true)
     setActiveCmd('custom')
     try {
-      const res = await fetch('/api/openclaw/run', {
+      const res = await fetch(buildDynamicApiUrl('/api/openclaw/run'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ command: customCmd.trim() }),

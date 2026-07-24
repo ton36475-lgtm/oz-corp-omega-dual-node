@@ -1,0 +1,78 @@
+name: oz-local-mcp
+
+networks:
+  mcp-net:
+    driver: bridge
+
+volumes:
+  redis-data:
+  n8n-data:
+
+services:
+  mcp-redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:${MCP_REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - mcp-net
+
+  mcp-n8n:
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    environment:
+      N8N_HOST: 127.0.0.1
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      N8N_BASIC_AUTH_ACTIVE: "true"
+      N8N_BASIC_AUTH_USER: ${N8N_BASIC_AUTH_USER:-local}
+      N8N_BASIC_AUTH_PASSWORD: ${N8N_BASIC_AUTH_PASSWORD:-change-me-local-only}
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY:-change-me-32-byte-local-key}
+      GENERIC_TIMEZONE: Asia/Bangkok
+      TZ: Asia/Bangkok
+    ports:
+      - "127.0.0.1:${MCP_N8N_PORT:-5678}:5678"
+    volumes:
+      - n8n-data:/home/node/.n8n
+    networks:
+      - mcp-net
+    depends_on:
+      - mcp-redis
+
+  mcp-gateway:
+    image: node:22-alpine
+    restart: unless-stopped
+    working_dir: /app
+    command:
+      - node
+      - -e
+      - |
+        const http = require('node:http');
+        const port = Number(process.env.PORT || 8787);
+        http.createServer((req, res) => {
+          res.setHeader('content-type', 'application/json');
+          res.end(JSON.stringify({
+            ok: true,
+            service: 'mcp-gateway',
+            path: req.url,
+            upstreams: {
+              redis: 'mcp-redis:6379',
+              n8n: 'http://mcp-n8n:5678'
+            }
+          }));
+        }).listen(port, '0.0.0.0');
+    environment:
+      PORT: 8787
+      REDIS_URL: redis://mcp-redis:6379
+      N8N_URL: http://mcp-n8n:5678
+    ports:
+      - "127.0.0.1:${MCP_GATEWAY_PORT:-8787}:8787"
+    networks:
+      - mcp-net
+    depends_on:
+      - mcp-redis
+      - mcp-n8n
+

@@ -1,0 +1,50 @@
+{
+  "name": "ClawHub Monorepo Pack",
+  "columns": [
+    {
+      "id": "backlog",
+      "title": "Backlog",
+      "cards": [
+        "Add authenticated MCP gateway endpoints",
+        "Add Obsidian note sync from git commits",
+        "Add GitHub issue import/export"
+      ]
+    },
+    {
+      "id": "ready",
+      "title": "Ready",
+      "cards": [
+        "Wire Hermes A2A route to local MCP gateway",
+        "Add Grok provider smoke test"
+      ]
+    },
+    {
+      "id": "in_progress",
+      "title": "In Progress",
+      "cards": [
+        "Monorepo pack rebuild",
+        "Local Docker MCP network"
+      ]
+    },
+    {
+      "id": "review",
+      "title": "Review",
+      "cards": [
+        "Security secret scanner",
+        "Lightweight Ollama model cleanup"
+      ]
+    },
+    {
+      "id": "done",
+      "title": "Done",
+      "cards": [
+        "Node 22 setup",
+        "Hermes typecheck",
+        "Next production build",
+        "Local MCP Docker compose started",
+        "Grok/xAI provider code added"
+      ]
+    }
+  ]
+}
+

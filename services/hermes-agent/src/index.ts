@@ -1,11 +1,13 @@
 import "dotenv/config";
-import { OllamaClient } from "./llm/ollama-client.js";
+import { AdaptiveA2ARouter } from "./llm/adaptive-router.js";
 import { SafeCommandTool } from "./tools/safe-command-tool.js";
+import { WranglerSkill } from "./tools/wrangler-tool.js";
 import { HermesContinuity } from "./memory/continuity.js";
 
 class HermesAgent {
-  private llm = new OllamaClient();
+  private llm = new AdaptiveA2ARouter();
   private commands = new SafeCommandTool();
+  private wrangler = new WranglerSkill();
   private continuity = new HermesContinuity();
 
   async boot() {
@@ -24,7 +26,25 @@ class HermesAgent {
     console.log("Available Ollama models:");
     console.log(ollamaModels);
 
-    const response = await this.llm.generate("ตอบสั้น ๆ ภาษาไทยว่า Hermes local agent พร้อมทำงานหรือยัง");
+    const utilityManifest = await this.commands.run("utility_manifest");
+    console.log("Hermes UtilityTool manifest:");
+    console.log(utilityManifest);
+
+    const languageScan = await this.commands.run("language_scan");
+    console.log("Hermes language scan:");
+    console.log(languageScan);
+
+    const checkPlan = await this.commands.run("check_plan");
+    console.log("Hermes multi-language check plan:");
+    console.log(checkPlan);
+
+    const response = await this.llm.sendA2A({
+      fromAgent: "hermes",
+      toAgent: "local-runtime",
+      intent: "readiness_check",
+      payload: "ตอบสั้น ๆ ภาษาไทยว่า Hermes A2A local agent พร้อมทำงานหรือยัง",
+      preferredProvider: process.env.HERMES_LLM_PROVIDER as any
+    });
     console.log("LLM response:");
     console.log(response);
   }

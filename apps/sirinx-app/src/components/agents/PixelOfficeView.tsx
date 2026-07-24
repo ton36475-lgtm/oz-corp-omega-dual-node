@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { AGENT_DNA, LAYER_COLORS, type AgentDNA } from '@/data/agent-dna-data'
+import { buildDynamicApiUrl } from '@/lib/api-runtime'
 
 // ─── Runtime Status ───────────────────────────────────────────────────────────
 
@@ -316,7 +317,7 @@ function AiCustomizerPanel({
     if (!prompt.trim()) return
     setThinking(true)
     try {
-      const res = await fetch('/api/ai-customize', {
+      const res = await fetch(buildDynamicApiUrl('/api/ai-customize'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ model: selectedModel, prompt }),

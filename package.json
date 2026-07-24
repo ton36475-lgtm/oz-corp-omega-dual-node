@@ -1,13 +1,17 @@
 {
-  "name": "OZ-CORP",
-  "version": "1.0.0",
-  "description": "",
+  "name": "thcludecode-manager",
+  "version": "0.7.0",
+  "description": "thCludeCode manager project for thClaw orchestrator, skills/MCP/plugins marketplace orchestration, and pipeline automation.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "pnpm test:real-use",
+    "test:real-use": "pnpm --filter sirinx-api-worker test && pnpm --filter sirinx-api-worker check && pnpm --filter sirinx-app test:api-runtime && pnpm --filter sirinx-app typecheck && pnpm --filter sirinx-app build && pnpm --filter sirinx-app smoke:static && pnpm --filter @oz-corp/hermes-agent check && pnpm --filter ui-components test"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.33.3"
+  "packageManager": "pnpm@10.33.3",
+  "dependencies": {
+    "redis": "^5.12.1"
+  }
 }

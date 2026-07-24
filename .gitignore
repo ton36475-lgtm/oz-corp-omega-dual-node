@@ -15,6 +15,9 @@ __pycache__/
 .env
 .env.*
 !.env.example
+!*.example.env
+security/secrets.local.env
+security/*.local.env
 *.env
 *secret*
 *.key

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { getDynamicApiBase } from "@/lib/api-runtime";
 
 const engines = [
   "Hermes Local LLM",
@@ -13,12 +14,14 @@ const tools = [
   "GitHub Repos",
   "OpenClaw Continuity",
   "Hermes Agent",
+  "Workers AI Compute",
   "Ollama Local LLM",
   "Safe Command Tool",
   "ozwarp Audit",
 ];
 
 export default function CommandCenterPage() {
+  const dynamicApiBase = getDynamicApiBase();
   const [engine, setEngine] = useState(engines[0]);
   const [prompt, setPrompt] = useState("");
   const [output, setOutput] = useState(
@@ -26,7 +29,9 @@ export default function CommandCenterPage() {
       "OZ-CORP Command Center ready.",
       "",
       "Cloudflare Pages serves this UI as static files only.",
-      "Local dev: whitelist API routes (/api/command-center/status, /api/openclaw/run); never paste secrets here.",
+      `Dynamic POST runtime: ${dynamicApiBase || "same-origin local dev fallback"}.`,
+      "Production Worker: sirinx-api-worker handles /api/ai/compute, /api/openclaw/run, /api/ai-customize, and /api/vision/analyze.",
+      "Never paste secrets into this UI.",
       "",
       "Hermes Agent + Ollama run on your Mac/PC separately.",
     ].join("\n")
@@ -39,7 +44,7 @@ export default function CommandCenterPage() {
       setOutput(JSON.stringify(json, null, 2));
     } catch (e) {
       setOutput(
-        `Could not reach /api/command-center/status (expected offline on Pages static export).\n${String(e)}`
+        `Could not reach static status metadata at /api/command-center/status.\n${String(e)}`
       );
     }
   }
@@ -53,7 +58,7 @@ export default function CommandCenterPage() {
         prompt || "(empty)",
         "",
         "Next:",
-        "- Run Hermes locally and connect dashboard to your safe backend when ready.",
+        "- Set NEXT_PUBLIC_SIRINX_API_BASE_URL to the deployed Worker base before production use.",
         "- Use Claude Code CLI with official login — do not expose API keys in this UI.",
       ].join("\n")
     );
@@ -114,7 +119,7 @@ export default function CommandCenterPage() {
                 onClick={pingStatus}
                 className="rounded-xl border border-emerald-500/40 px-5 py-3 font-semibold text-emerald-200 hover:bg-emerald-950/80"
               >
-                Ping API Stub
+                Ping Static Status
               </button>
             </div>
 
@@ -143,6 +148,12 @@ export default function CommandCenterPage() {
                 <div className="flex justify-between">
                   <span>Production UI</span>
                   <span className="text-yellow-300">Static (Pages)</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span>Dynamic API</span>
+                  <span className="truncate text-right text-emerald-400">
+                    {dynamicApiBase || "same-origin dev"}
+                  </span>
                 </div>
               </div>
             </div>
