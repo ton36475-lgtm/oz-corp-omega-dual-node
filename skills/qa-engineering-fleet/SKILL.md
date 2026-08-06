@@ -43,10 +43,10 @@ Produce a fully tested, debugged system: every API route exercised (happy path, 
 
 ### Phase 3: Write missing tests (per surface)
 - **Cloudflare Worker** (`services/*/src/index.ts`): add `src/index.edge.test.ts` following the existing `index.test.ts` style (node:test + `handleRequest` import). Cover every route's GET/POST/OPTIONS/DELETE, 404, auth, size limits, sanitization, mocked service bindings and mocked fetch.
-- **Next.js app routes** (`apps/*/src/app/api/**/route.ts`): these are dev-only stubs; the worker is the production surface. Test pure libs instead: pipeline plan lib, command-center tools, API provider clients.
+- **Next.js app routes** (`apps/*/src/app/api/**/route.ts`): these are dev-only stubs; the worker is the production surface. Test them by importing the exported GET/POST handlers and calling with `new NextRequest('http://localhost:3000/path', {method, headers, body})` under tsx. Cast the init through `unknown` to Next's own RequestInit type (`ConstructorParameters<typeof NextRequest>[1]`) to satisfy its stricter `signal` typing. Run with `--test-force-exit`: ai-customize and models create abort timers that otherwise hold the test process open.
 - **Supabase service layer** (`apps/*/src/services/*.ts`): audit each function for query construction, error handling, mock-fallback parity, pagination math, null safety, type alignment with `database.types.ts`.
   - Technique: the app's `@/*` path aliases do NOT resolve under plain `node --test`. Add `tsx` as a devDependency and run service tests with `env -u NEXT_PUBLIC_SUPABASE_URL -u NEXT_PUBLIC_SUPABASE_ANON_KEY tsx --test "src/services/**/*.test.ts"` so aliases resolve and mock mode is guaranteed. Probe alias resolution with a tiny script before writing many tests.
-  - The `*Insert` types (`Omit<Full, id|timestamps>`) require every column while the services default most at runtime. Cast partial inserts to the Insert type in tests and file the mismatch as a finding: defaulted columns should be optional in the Insert types.
+  - The `*Insert` types may require every column while the services default most at runtime. Align the types with the runtime contract: only columns the `create*` service does NOT default should be required (e.g. leads requires only `name`). This removes the need for unsafe casts in tests. Keep `Update = Partial<Insert>`.
 
 ### Phase 4: Fix bugs with regression tests
 For each bug found:
@@ -60,7 +60,9 @@ Common bug classes found on this fleet:
 - Sanitizer strips only `<`/`>` instead of full tag spans -> script content leaks into stored text. Fix: strip `<script>...</script>` and `<style>...</style>` blocks, then remaining tags, then brackets, then collapse whitespace.
 - Mock fallback ignores pagination options (limit/offset) while the DB path honors them -> dev (mock) and prod (DB) paginate differently. Fix: apply `slice(offset, offset + (limit ?? defaultPage))` in the mock branch to mirror the Supabase path, and add regression tests for limit, offset, and offset-without-limit.
 - `force-static` on POST routes that read `req.json()`: with `output: export` this annotation is REQUIRED for the build; do NOT remove it. It is contradictory but build-mandated. Leave it and note it.
-- Missing `req.json()` try/catch -> unhandled 500 on malformed JSON. Fix: wrap parse, return 400.
+- Missing `req.json()` try/catch -> unhandled 500 on malformed JSON. Fix: wrap parse, return 400. Audit EVERY route handler for this (ai-customize had it; the other app routes did not).
+- Unvalidated handler input crashes fallback logic -> e.g. missing prompt reached `localFallback(undefined)` and threw TypeError. Fix: validate required string fields before any fetch or fallback, return 400.
+- Validation ordering: checks that depend on external state (executable present, binding configured) should run AFTER input allowlist checks so invalid input always returns 4xx regardless of environment.
 - Mock data shape drifting from typed records -> unsafe casts. Fix: keep mocks aligned with `database.types.ts`.
 - Gateway URL join double-slashes if base URL already ends in `/api/`. Fix: strip trailing slashes from base before appending path.
 

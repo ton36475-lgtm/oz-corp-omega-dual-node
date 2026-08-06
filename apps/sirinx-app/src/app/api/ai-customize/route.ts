@@ -22,9 +22,23 @@ Respond ONLY with valid JSON in this format:
 Be smart about interpreting commands in Thai or English.`
 
 export async function POST(req: NextRequest) {
-  const { model, prompt } = await req.json() as { model: string; prompt: string }
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
 
-  const baseUrl = MODEL_URLS[model]
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+    return NextResponse.json({ error: 'Body must be a JSON object' }, { status: 400 });
+  }
+
+  const { model, prompt } = body as { model?: unknown; prompt?: unknown };
+  if (typeof prompt !== 'string' || !prompt.trim()) {
+    return NextResponse.json({ error: 'prompt must be a non-empty string' }, { status: 400 });
+  }
+
+  const baseUrl = MODEL_URLS[model as string]
   if (!baseUrl) {
     return NextResponse.json({ error: 'Unknown model' }, { status: 400 })
   }

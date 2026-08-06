@@ -140,6 +140,24 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Validate the allowlist BEFORE the executable check so unknown commands
+  // return 400 consistently (mirrors the Worker's /api/openclaw/run).
+  const args = ALLOWED_COMMANDS[command];
+  if (!args) {
+    const ts = new Date().toISOString();
+    return NextResponse.json(
+      {
+        command,
+        fullCmd: "(not executed — unknown preset)",
+        stdout: "",
+        stderr: `Unknown command: ${command}`,
+        success: false,
+        timestamp: ts,
+      },
+      { status: 400 }
+    );
+  }
+
   const exe = getExecutable();
   if (!exe) {
     const ts = new Date().toISOString();
@@ -155,22 +173,6 @@ export async function POST(req: NextRequest) {
         hint: `Allowed presets: ${Object.keys(ALLOWED_COMMANDS).join(", ")}`,
       },
       { status: 503 }
-    );
-  }
-
-  const args = ALLOWED_COMMANDS[command];
-  if (!args) {
-    const ts = new Date().toISOString();
-    return NextResponse.json(
-      {
-        command,
-        fullCmd: "(not executed — unknown preset)",
-        stdout: "",
-        stderr: `Unknown command: ${command}`,
-        success: false,
-        timestamp: ts,
-      },
-      { status: 400 }
     );
   }
 

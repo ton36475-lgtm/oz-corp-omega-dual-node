@@ -1,0 +1,61 @@
+name: QA Engineering
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  qa:
+    name: Test, typecheck, build, dry-run
+    runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ""
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ""
+      NEXT_PUBLIC_SIRINX_API_BASE_URL: ""
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Worker API tests (Cloudflare Worker)
+        working-directory: services/sirinx-api-worker
+        run: npm test
+
+      - name: Worker typecheck
+        working-directory: services/sirinx-api-worker
+        run: npx tsc --noEmit
+
+      - name: Worker deploy dry-run
+        working-directory: services/sirinx-api-worker
+        run: npx wrangler deploy --dry-run
+
+      - name: App lib tests
+        working-directory: apps/sirinx-app
+        run: npm run test:api-runtime
+
+      - name: App service + route tests (mock mode)
+        working-directory: apps/sirinx-app
+        run: npm run test:services
+
+      - name: App typecheck
+        working-directory: apps/sirinx-app
+        run: npx tsc --noEmit
+
+      - name: App build (static export)
+        working-directory: apps/sirinx-app
+        run: npm run build
+
+      - name: Static export smoke
+        working-directory: apps/sirinx-app
+        run: npm run smoke:static

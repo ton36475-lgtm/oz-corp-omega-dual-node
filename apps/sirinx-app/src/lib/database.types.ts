@@ -25,7 +25,21 @@ export interface Lead {
   updated_at: string
 }
 
-export type LeadInsert = Omit<Lead, 'id' | 'created_at' | 'updated_at'> & {
+// Insert types: only columns the service layer does NOT default at runtime are
+// required (see create* in src/services/*.ts — every other column gets a default
+// in the mock branch and the DB. Kept optional so callers can omit defaults.
+
+export type LeadInsert = {
+  name: string
+  company?: string | null
+  phone?: string | null
+  email?: string | null
+  province?: string | null
+  source?: string | null
+  status?: LeadStatus
+  assigned_agent?: string | null
+  score?: number
+  notes?: string | null
   id?: string
   created_at?: string
   updated_at?: string
@@ -49,7 +63,18 @@ export interface Customer {
   created_at: string
 }
 
-export type CustomerInsert = Omit<Customer, 'id' | 'created_at'> & {
+export type CustomerInsert = {
+  name: string
+  lead_id?: string | null
+  company?: string | null
+  phone?: string | null
+  email?: string | null
+  province?: string | null
+  plan?: CustomerPlan | null
+  mrr?: number
+  installation_date?: string | null
+  system_size_kw?: number | null
+  status?: string
   id?: string
   created_at?: string
 }
@@ -75,7 +100,21 @@ export interface Installation {
   created_at: string
 }
 
-export type InstallationInsert = Omit<Installation, 'id' | 'created_at'> & {
+export type InstallationInsert = {
+  province: string
+  system_size_kw: number
+  customer_id?: string | null
+  panel_count?: number | null
+  inverter_type?: string | null
+  battery_kwh?: number | null
+  total_cost?: number | null
+  monthly_savings?: number | null
+  roi_years?: number | null
+  npv?: number | null
+  irr?: number | null
+  status?: InstallationStatus
+  contractor_id?: string | null
+  completed_at?: string | null
   id?: string
   created_at?: string
 }
@@ -95,7 +134,15 @@ export interface Contractor {
   created_at: string
 }
 
-export type ContractorInsert = Omit<Contractor, 'id' | 'created_at'> & {
+export type ContractorInsert = {
+  name: string
+  company?: string | null
+  phone?: string | null
+  email?: string | null
+  provinces?: string[] | null
+  rating?: number
+  jobs_completed?: number
+  status?: string
   id?: string
   created_at?: string
 }
@@ -140,7 +187,17 @@ export interface AgentTask {
   created_at: string
 }
 
-export type AgentTaskInsert = Omit<AgentTask, 'id' | 'created_at'> & {
+export type AgentTaskInsert = {
+  agent_name: string
+  agent_layer?: AgentLayer | null
+  task_type?: string | null
+  description?: string | null
+  status?: AgentTaskStatus
+  priority?: number
+  revenue_impact?: number
+  result?: Record<string, unknown> | null
+  started_at?: string | null
+  completed_at?: string | null
   id?: string
   created_at?: string
 }
@@ -162,7 +219,17 @@ export interface Campaign {
   created_at: string
 }
 
-export type CampaignInsert = Omit<Campaign, 'id' | 'created_at'> & {
+export type CampaignInsert = {
+  name: string
+  type?: string | null
+  budget?: number | null
+  spent?: number
+  leads_generated?: number
+  conversions?: number
+  roi?: number | null
+  status?: CampaignStatus
+  started_at?: string | null
+  ended_at?: string | null
   id?: string
   created_at?: string
 }
@@ -178,7 +245,11 @@ export interface SystemMetric {
   recorded_at: string
 }
 
-export type SystemMetricInsert = Omit<SystemMetric, 'id' | 'recorded_at'> & {
+export type SystemMetricInsert = {
+  metric_name: string
+  metric_value: number
+  metric_unit?: string | null
+  agent_name?: string | null
   id?: string
   recorded_at?: string
 }

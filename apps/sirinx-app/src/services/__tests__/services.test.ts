@@ -11,13 +11,6 @@ import { getContractors, getContractorById, createContractor, updateContractor }
 import { getCampaigns, getCampaignById, createCampaign, updateCampaign, getCampaignSummary } from '@/services/campaigns';
 import { getLatestMetric, getMetricHistory, recordMetric, getDashboardKPIs } from '@/services/metrics';
 import { getAgentTasks, createAgentTask, updateAgentTask, completeAgentTask, getAgentTaskSummary } from '@/services/agents';
-import type { LeadInsert, CustomerInsert, InstallationInsert, ContractorInsert, CampaignInsert, SystemMetricInsert, AgentTaskInsert } from '@/lib/database.types';
-
-// The *Insert types require every column, but the services default most
-// columns at runtime (see create* mock branches). The inserts below are cast
-// to the Insert type to reflect that runtime contract; this mismatch itself
-// is a finding: Insert types should make defaulted columns optional.
-const asInsert = <T,>(value: unknown) => value as T;
 
 // ── leads ───────────────────────────────────────────────────────────────────
 
@@ -61,7 +54,7 @@ test('leads: getLeadById finds existing and null for missing', async () => {
 });
 
 test('leads: createLead applies defaults and prepends', async () => {
-  const created = await createLead(asInsert<LeadInsert>({ name: 'คุณใหม่ ทดสอบ', score: 90, status: 'qualified' }));
+  const created = await createLead({ name: 'คุณใหม่ ทดสอบ', score: 90, status: 'qualified' });
   assert.ok(typeof created.id === 'string' && created.id.length > 0);
   assert.equal(created.status, 'qualified');
   assert.equal(created.company, null);
@@ -103,7 +96,7 @@ test('customers: getCustomers returns all, getById finds/misses', async () => {
 });
 
 test('customers: createCustomer applies defaults', async () => {
-  const created = await createCustomer(asInsert<CustomerInsert>({ name: 'คุณใหม่ ลูกค้า' }));
+  const created = await createCustomer({ name: 'คุณใหม่ ลูกค้า' });
   assert.equal(created.mrr, 0);
   assert.equal(created.status, 'active');
   assert.equal(created.plan, null);
@@ -131,7 +124,7 @@ test('installations: CRUD and province counts', async () => {
   assert.equal((await getInstallationById('i1'))?.system_size_kw, 500);
   assert.equal(await getInstallationById('missing'), null);
 
-  const created = await createInstallation(asInsert<InstallationInsert>({ province: 'เชียงใหม่', system_size_kw: 100 }));
+  const created = await createInstallation({ province: 'เชียงใหม่', system_size_kw: 100 });
   assert.equal(created.status, 'planned');
   assert.equal((await getInstallations()).length, 3);
 
@@ -156,7 +149,7 @@ test('contractors: CRUD defaults and missing-id errors', async () => {
   assert.equal((await getContractorById('con1'))?.rating, 4.8);
   assert.equal(await getContractorById('missing'), null);
 
-  const created = await createContractor(asInsert<ContractorInsert>({ name: 'คุณใหม่ ช่าง' }));
+  const created = await createContractor({ name: 'คุณใหม่ ช่าง' });
   assert.equal(created.rating, 0);
   assert.equal(created.jobs_completed, 0);
   assert.equal(created.status, 'active');
@@ -178,7 +171,7 @@ test('campaigns: CRUD and summary aggregation', async () => {
   assert.equal((await getCampaignById('camp1'))?.budget, 50000);
   assert.equal(await getCampaignById('missing'), null);
 
-  const created = await createCampaign(asInsert<CampaignInsert>({ name: 'Test Campaign', type: 'facebook' }));
+  const created = await createCampaign({ name: 'Test Campaign', type: 'facebook' });
   assert.equal(created.status, 'draft');
   assert.equal(created.spent, 0);
   assert.equal((await getCampaigns()).length, 4);
@@ -206,7 +199,7 @@ test('metrics: getMetricHistory filters by name', async () => {
 });
 
 test('metrics: recordMetric pushes with defaults', async () => {
-  const recorded = await recordMetric(asInsert<SystemMetricInsert>({ metric_name: 'test_metric', metric_value: 42 }));
+  const recorded = await recordMetric({ metric_name: 'test_metric', metric_value: 42 });
   assert.equal(recorded.metric_unit, null);
   assert.equal(recorded.agent_name, null);
   assert.ok(recorded.recorded_at);
@@ -235,7 +228,7 @@ test('agents: getAgentTasks filters by status, layer, name, and limit', async ()
 });
 
 test('agents: createAgentTask applies defaults', async () => {
-  const created = await createAgentTask(asInsert<AgentTaskInsert>({ agent_name: 'Kihei-26', task_type: 'generate_proposal' }));
+  const created = await createAgentTask({ agent_name: 'Kihei-26', task_type: 'generate_proposal' });
   assert.equal(created.status, 'pending');
   assert.equal(created.priority, 5);
   assert.equal(created.revenue_impact, 0);
