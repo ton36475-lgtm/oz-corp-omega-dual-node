@@ -57,6 +57,9 @@ importers:
       tailwindcss:
         specifier: ^4.0.0-alpha.16
         version: 4.2.4
+      tsx:
+        specifier: ^4.21.0
+        version: 4.21.0
       typescript:
         specifier: ^5
         version: 5.9.3
@@ -90,6 +93,10 @@ importers:
         version: 20.19.39
 
   services/sirinx-api-worker:
+    dependencies:
+      '@supabase/server':
+        specifier: 1.4.1
+        version: 1.4.1(@supabase/supabase-js@2.105.3)
     devDependencies:
       '@types/node':
         specifier: ^20.19.39
@@ -881,6 +888,25 @@ packages:
   '@supabase/realtime-js@2.105.3':
     resolution: {integrity: sha512-L+qPiJlq1RKh3QD2fORGCFo2RKDKlvG9mjvPtUEQJ2tMixrx70VIV6j8BdWzQkbc1Nao6mvTWajyDhX3TFgljw==}
     engines: {node: '>=20.0.0'}
+
+  '@supabase/server@1.4.1':
+    resolution: {integrity: sha512-Fyzpi+Srfn+flN3PwueObhSmwhXFaTkrnk3iD+ttNBEz6gD0VmaOqTe7tCxTSodm1zncWSxsyPQxATL7V+SfIw==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@nestjs/common': ^10.0.0 || ^11.0.0
+      '@supabase/supabase-js': ^2.0.0
+      elysia: ^1.4.0
+      h3: ^2.0.0
+      hono: ^4.0.0
+    peerDependenciesMeta:
+      '@nestjs/common':
+        optional: true
+      elysia:
+        optional: true
+      h3:
+        optional: true
+      hono:
+        optional: true
 
   '@supabase/storage-js@2.105.3':
     resolution: {integrity: sha512-M7oPCCcHim/FsR6rKIs10Nd9mW051N2SQvA27jiVLa7oQMFFb7faX5dCQRV4GS5QeFsBcV5J/fWl4Ppoaw8cBQ==}
@@ -1958,6 +1984,9 @@ packages:
   jiti@2.7.0:
     resolution: {integrity: sha512-AC/7JofJvZGrrneWNaEnJeOLUx+JlGt7tNa0wZiRPT4MY1wmfKjt2+6O2p2uz2+skll8OZZmJMNqeke7kKbNgQ==}
     hasBin: true
+
+  jose@6.2.8:
+    resolution: {integrity: sha512-Bsdjwm3Qsd/P0jR+BHDe3LytDfY7WBq2HmCCLIwuVRHMuEC9ae7/R474GIUdF1NgCyZjzVo/A9DOiOBtXq8ZoQ==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -3165,6 +3194,11 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
+
+  '@supabase/server@1.4.1(@supabase/supabase-js@2.105.3)':
+    dependencies:
+      '@supabase/supabase-js': 2.105.3
+      jose: 6.2.8
 
   '@supabase/storage-js@2.105.3':
     dependencies:
@@ -4410,6 +4444,8 @@ snapshots:
       set-function-name: 2.0.2
 
   jiti@2.7.0: {}
+
+  jose@6.2.8: {}
 
   js-tokens@4.0.0: {}
 

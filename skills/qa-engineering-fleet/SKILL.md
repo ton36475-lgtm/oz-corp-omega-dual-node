@@ -45,6 +45,8 @@ Produce a fully tested, debugged system: every API route exercised (happy path, 
 - **Cloudflare Worker** (`services/*/src/index.ts`): add `src/index.edge.test.ts` following the existing `index.test.ts` style (node:test + `handleRequest` import). Cover every route's GET/POST/OPTIONS/DELETE, 404, auth, size limits, sanitization, mocked service bindings and mocked fetch.
 - **Next.js app routes** (`apps/*/src/app/api/**/route.ts`): these are dev-only stubs; the worker is the production surface. Test pure libs instead: pipeline plan lib, command-center tools, API provider clients.
 - **Supabase service layer** (`apps/*/src/services/*.ts`): audit each function for query construction, error handling, mock-fallback parity, pagination math, null safety, type alignment with `database.types.ts`.
+  - Technique: the app's `@/*` path aliases do NOT resolve under plain `node --test`. Add `tsx` as a devDependency and run service tests with `env -u NEXT_PUBLIC_SUPABASE_URL -u NEXT_PUBLIC_SUPABASE_ANON_KEY tsx --test "src/services/**/*.test.ts"` so aliases resolve and mock mode is guaranteed. Probe alias resolution with a tiny script before writing many tests.
+  - The `*Insert` types (`Omit<Full, id|timestamps>`) require every column while the services default most at runtime. Cast partial inserts to the Insert type in tests and file the mismatch as a finding: defaulted columns should be optional in the Insert types.
 
 ### Phase 4: Fix bugs with regression tests
 For each bug found:
@@ -56,6 +58,7 @@ For each bug found:
 
 Common bug classes found on this fleet:
 - Sanitizer strips only `<`/`>` instead of full tag spans -> script content leaks into stored text. Fix: strip `<script>...</script>` and `<style>...</style>` blocks, then remaining tags, then brackets, then collapse whitespace.
+- Mock fallback ignores pagination options (limit/offset) while the DB path honors them -> dev (mock) and prod (DB) paginate differently. Fix: apply `slice(offset, offset + (limit ?? defaultPage))` in the mock branch to mirror the Supabase path, and add regression tests for limit, offset, and offset-without-limit.
 - `force-static` on POST routes that read `req.json()`: with `output: export` this annotation is REQUIRED for the build; do NOT remove it. It is contradictory but build-mandated. Leave it and note it.
 - Missing `req.json()` try/catch -> unhandled 500 on malformed JSON. Fix: wrap parse, return 400.
 - Mock data shape drifting from typed records -> unsafe casts. Fix: keep mocks aligned with `database.types.ts`.
@@ -69,8 +72,9 @@ When multiple surfaces exist, dispatch parallel workers:
    - model: a route from list_models (check credentials first)
    - working_dir: repo root
    - prompt: precise scope, rules (never deploy/push/touch production), and required report format (audited, tested, bugs found with file:line + severity, tests added, files changed).
-3. Workers run in separate swarms; track via `session_search` with the working dir and distinctive keywords, or have them report back to you.
-4. Merge their findings into the final report.
+3. VERIFY LIVENESS before relying on workers: their session journal files must show assistant turns and tool activity after spawn (check `~/.jcode/sessions/<session-id>.journal.jsonl`). Observed failure mode: spawn returns a session id but the worker never runs (stale PID, no assistant turns). If workers are dead, execute the coverage yourself rather than claiming fleet coverage.
+4. Track via `session_search` with the working dir and distinctive keywords, or have them report back to you.
+5. Merge their findings into the final report.
 
 ### Phase 6: Verification (5 min)
 1. Re-run all suites: worker tests, app lib tests, typecheck both, build, wrangler dry-run, smoke:static.

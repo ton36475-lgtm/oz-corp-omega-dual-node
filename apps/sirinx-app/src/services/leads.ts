@@ -19,11 +19,19 @@ export async function getLeads(options?: {
   offset?: number
 }): Promise<Lead[]> {
   if (!isSupabaseConfigured || !supabase) {
-    const { status, province } = options ?? {}
-    return MOCK_LEADS.filter(l =>
+    const { status, province, limit, offset } = options ?? {}
+    let result = MOCK_LEADS.filter(l =>
       (!status || l.status === status) &&
       (!province || l.province === province)
     )
+    // Mirror the Supabase path: limit alone takes the first N; offset applies
+    // range(offset, offset + limit - 1) with a 50-row default page.
+    if (limit !== undefined || offset !== undefined) {
+      const start = offset ?? 0
+      const pageSize = limit ?? 50
+      result = result.slice(start, start + pageSize)
+    }
+    return result
   }
 
   let query = supabase.from('leads').select('*').order('created_at', { ascending: false })

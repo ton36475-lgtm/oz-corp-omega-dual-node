@@ -52,6 +52,22 @@ POST /api/vision/analyze          → ZhipuClient (analyzeRoof, readElectricityB
 
 ## 3. Coverage Matrix
 
+### Supabase service layer — 36 new tests (all pass)
+Added `src/services/__tests__/services.test.ts` (run via `npm run test:services` with tsx path-alias resolution, mock mode).
+
+| Service | Functions covered |
+|---|---|
+| leads | getLeads (all, status, province, limit, offset, offset+limit), getLeadById, createLead defaults, updateLead + missing throw, deleteLead, getLeadsCount, getLeadsByStatus |
+| customers | getCustomers, getCustomerById, createCustomer defaults, updateCustomer + missing throw, getTotalMRR |
+| installations | getInstallations (status filter), getInstallationById, createInstallation defaults, updateInstallation + missing throw, getInstallationsByProvince |
+| contractors | getContractors (province membership), getContractorById, createContractor defaults, updateContractor + missing throw |
+| campaigns | getCampaigns (status filter), getCampaignById, createCampaign defaults, updateCampaign + missing throw, getCampaignSummary aggregation |
+| metrics | getLatestMetric, getMetricHistory, recordMetric defaults, getDashboardKPIs fixture |
+| agents | getAgentTasks (status/layer/name/limit), createAgentTask defaults, updateAgentTask + missing throw, completeAgentTask, getAgentTaskSummary |
+
+### App libs (pipeline + command center) — 10 new tests (all pass)
+Added `src/lib/__tests__/pipeline-command-center.test.ts`: sanitizer strip of script/style/full tags, safe defaults, number clamping, stage-ready logic, missing-fact reporting, unknown-agent guard, command-center tool mapping and shapes, TELEGRAM_COMMANDS consistency, LeadFacts round-trip.
+
 ### Worker routes — baseline 9 tests → final 37 tests (all pass)
 
 | Route | Cases covered |
@@ -85,6 +101,7 @@ POST /api/vision/analyze          → ZhipuClient (analyzeRoof, readElectricityB
 | 1 | High | `services/sirinx-api-worker/src/index.ts` `sanitizeText` | Only stripped `<`/`>` chars, so `<script>alert(1)</script>` content leaked into stored lead text (stored XSS vector) | Strip script/style blocks, then full tag spans, then brackets, collapse whitespace |
 | 2 | Medium | `apps/sirinx-app/src/lib/sirinx-pipeline.ts` `sanitizeText` | Same sanitizer weakness duplicated in app pipeline lib | Same fix applied |
 | 3 | Low | `services/sirinx-api-worker/src/index.test.ts` | Original test used `<SIRINX Factory>` input, which the hardened sanitizer now (correctly) treats as a tag; test would fail | Updated test input to realistic `<b>SIRINX Factory</b>` markup |
+| 4 | Medium | `apps/sirinx-app/src/services/leads.ts` `getLeads` mock branch | Mock fallback ignored `limit`/`offset` while the Supabase path honored them — pagination behaved differently in dev (mock) vs prod (DB) | Mock branch now applies `slice(offset, offset + (limit ?? 50))`, mirroring the DB path; regression test added for limit, offset, and offset-without-limit |
 
 ## 5. Test Counts (baseline → final)
 
@@ -92,9 +109,14 @@ POST /api/vision/analyze          → ZhipuClient (analyzeRoof, readElectricityB
 |---|---|---|
 | Worker (`npm test`) | 9 | 37 |
 | App libs (`npm run test:api-runtime`) | 4 | 10 |
-| **Total** | **13** | **47** |
+| App services + pipeline/command-center libs (`npm run test:services`) | 0 | 36 |
+| **Total** | **13** | **83** |
 
-All 47 pass. Zero failures, zero skipped.
+All 83 pass. Zero failures, zero skipped.
+
+## 5b. Fleet Engineering Note (honest)
+
+Two fleet workers were spawned (`swarm spawn`, `openai-api:gpt-5.6-sol`) for the Supabase service layer and Next.js routes. Their journal files show only the spawn message — no assistant turns, no tool calls, both sharing a stale PID. The swarm spawn produced no live workers in this environment. Rather than claim fleet coverage that did not happen, the coordinator executed the full service-layer and app-route coverage itself (36 + 10 tests above). The fleet pattern is still encoded in the skill for environments where spawns actually run; verify worker liveness via journal/session files before relying on them.
 
 ## 6. Notable Non-Bugs (verified safe)
 
