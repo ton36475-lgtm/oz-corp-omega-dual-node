@@ -160,7 +160,7 @@ test('pipeline POST validates allowed lead fact fields and returns a plan', asyn
   const good = await json(new Request('https://api.sirinx.ai/api/pipeline/plan', {
     method: 'POST',
     body: JSON.stringify({
-      businessName: '<SIRINX Factory>',
+      businessName: '<b>SIRINX Factory</b>',
       province: 'Phitsanulok',
       monthlyBillThb: 125000.25,
       roofAreaSqm: 720.8,

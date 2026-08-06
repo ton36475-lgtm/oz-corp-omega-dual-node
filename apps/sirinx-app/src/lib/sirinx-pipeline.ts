@@ -186,7 +186,14 @@ function getAgentProfile(id: string): AgentRuntimeProfile {
 
 function sanitizeText(value: unknown): string {
   if (typeof value !== 'string') return '';
-  return value.replace(/[<>]/g, '').trim().slice(0, 160);
+  return value
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]*>?/g, '')
+    .replace(/[<>]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 160);
 }
 
 function safeNumber(value: unknown): number {

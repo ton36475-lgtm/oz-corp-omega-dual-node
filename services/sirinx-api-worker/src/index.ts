@@ -1129,7 +1129,16 @@ function isRecord(value: unknown): value is JsonObject {
 
 function sanitizeText(value: unknown): string {
   if (typeof value !== 'string') return '';
-  return value.replace(/[<>]/g, '').trim().slice(0, 160);
+  // Remove active-content blocks first, then any remaining tag spans,
+  // then stray brackets, then collapse whitespace.
+  return value
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<[^>]*>?/g, '')
+    .replace(/[<>]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 160);
 }
 
 function safeNumber(value: unknown): number {
